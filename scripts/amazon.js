@@ -1,15 +1,25 @@
 
-// 1. 取得data
-// 2. 創造 html
-// 3. 互動
+// 1. 取得data --ok
+// 2. 創造 html --ok
+// 3. 互動 --
+import {cart, addToCart} from '../data/cart.js';
+import {products} from '../data/products.js';
 
-let productsGrid = document.querySelector('.products-grid')
 let productsHtml = ''
 
-products.forEach(function(product, index){
+function updateCartQuantity() {
+  let cartQuantity = 0;
+  cart.forEach((cartItem)=>{
+    cartQuantity += cartItem.quantity
+  })
+  document.querySelector('.js-cart-quantity')
+    .innerHTML = cartQuantity
+}
+
+products.forEach((product, index) => {
   let {id, image, name, rating, priceCents, keywords} = product
 
-  let productContainer = `
+  productsHtml += `
     <div class="product-container">
       <div class="product-image-container">
         <img class="product-image"
@@ -21,14 +31,14 @@ products.forEach(function(product, index){
       </div>
 
         <img class="product-rating-stars"
-          src="images/ratings/rating-45.png">
+          src="images/ratings/rating-${rating.stars * 10 }.png">
         <div class="product-rating-count link-primary">
-          56
+          ${rating.count}
         </div>
 
 
       <div class="product-price">
-        ${priceCents}
+        $${(priceCents/100).toFixed(2)}
       </div>
 
       <div class="product-quantity-container">
@@ -53,15 +63,21 @@ products.forEach(function(product, index){
         Added
       </div>
 
-      <button class="add-to-cart-button button-primary">
+      <button class="add-to-cart-button button-primary js-add-to-cart"
+      data-product-id="${product.id}">
         Add to Cart
       </button>
     </div>
   `
-  productsHtml += productContainer
 })
+document.querySelector('.products-grid').innerHTML = productsHtml
 
-productsGrid.innerHTML = productsHtml
-
-
+document.querySelectorAll('.js-add-to-cart')
+  .forEach((button) => {
+    button.addEventListener('click', () => {
+      const productId = button.dataset.productId;
+      addToCart(productId);
+      updateCartQuantity();
+    });
+  })
 
